@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewItemActivity">
+    tools:context=".activity.NewItemActivity">
 
     <ImageView
         android:id="@+id/imvPhotoPreview"
@@ -55,7 +55,7 @@
         android:hint="Descrição"
         android:inputType="text"
         android:textColorHint="#F44336"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/btnAddItem"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etTitle" />
