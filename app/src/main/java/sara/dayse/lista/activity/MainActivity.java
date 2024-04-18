@@ -18,12 +18,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FloatingActionButton fabAddItem = findViewById(R.id.fabAddNewItem);
-        fabAddItem.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fabAddItem = findViewById(R.id.fabAddNewItem);//obtém botão
+        fabAddItem.setOnClickListener(new View.OnClickListener() { //registra um ouvidor de cliques
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this,NewItemActivity.class);
-                startActivityForResult(i, NEW_ITEM_REQUEST);
+                Intent i = new Intent(MainActivity.this,NewItemActivity.class);//Intent explícito para navegar para NewItemAcitvity
+                startActivityForResult(i, NEW_ITEM_REQUEST);//assume que a Activity destino (NewItemAcitivity)
+                //irá retornar com dados em algum momento para
+                //a Activity que iniciou a navegação (MainActivity)
 
             }
         });
