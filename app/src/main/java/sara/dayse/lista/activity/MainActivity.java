@@ -1,27 +1,33 @@
 package sara.dayse.lista.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import sara.dayse.lista.R;
 import sara.dayse.lista.adapter.MyAdapter;
+import sara.dayse.lista.model.MainActivityViewModel;
 import sara.dayse.lista.model.MyItem;
+import sara.dayse.lista.util.Util;
 
 public class MainActivity extends AppCompatActivity {
     static int NEW_ITEM_REQUEST =1;
-    List<MyItem> itens = new ArrayList<>();//lista que está definida como atributo de MainActivity
+
     MyAdapter myAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rvItens = findViewById(R.id.rvItens);//obtém RecycleView
 
-        myAdapter = new MyAdapter(this,itens);//cria o MyAdapter
+        MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);//// obtemos o ViewModel
+        List<MyItem>items = vm.getItems();// obtemos a lista de itens que o ViewModel guarda
+        myAdapter = new MyAdapter(this,items);//cria o MyAdapter
         rvItens.setAdapter(myAdapter);//seta MyAdapter no RecycleView
 
         rvItens.setHasFixedSize(true);//indica que não há variação de tamanho entre os itens da lista.
@@ -63,10 +71,21 @@ public class MainActivity extends AppCompatActivity {
                 // e os guarda dentro de myItem
                 myItem.description = data.getStringExtra("description");//obtém os dados retornados por NewItemActivity e os
                 //guarda dentro de myItem
-                myItem.photo = data.getData();//obtém os dados retornados por NewItemActivity e os
+                Uri selectedPhotoUri  = data.getData();//obtém os dados retornados por NewItemActivity e os
                 //guarda dentro de myItem
-                itens.add(myItem);//adiciona o item a uma lista de itens
-                myAdapter.notifyItemInserted(itens.size()-1);
+
+                try {
+                    Bitmap photo = Util.getBitmap(MainActivity.this, selectedPhotoUri, 100, 100);//carrega imagem e guarda no Bitmap
+                    myItem.photo = photo;//guarda Bitmap no objeto tipo MyItem
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();//se o arquivo de imagem não for encontrado,a exceção é disparada
+
+                }
+
+                MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);// obtemos o ViewModel
+                List<MyItem> items = vm.getItems();// obtemos a lista de itens que o ViewModel guarda
+                items.add(myItem);//adiciona o item a uma lista de itens
+                myAdapter.notifyItemInserted(items.size()-1);
             }
         }
     }

@@ -2,6 +2,8 @@ package sara.dayse.lista.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,16 +17,26 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import sara.dayse.lista.R;
+import sara.dayse.lista.model.NewItemActivityViewModel;
 
 public class NewItemActivity extends AppCompatActivity {
 
     static int PHOTO_PICKER_REQUEST = 1;
-    Uri photoSelected = null;//guarda o endereço da foto selecionada pelo usuário
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_item);
+
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);//obtém ViewModel
+
+        Uri selectPhotoLocation = vm.getSelectPhotoLocation();//obtém o endereço URI guardado dentro do ViewModel
+        if (selectPhotoLocation != null) { // se o endereço não é nulo,significa que o usuário havia escolhido uma imagem antes de
+            //rotacionar a tela
+            ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);//seta a imagem no ImageView da tela
+            imvfotoPreview.setImageURI(selectPhotoLocation);//seta a imagem no ImageView da tela
+        }
 
         ImageButton imgCI = findViewById(R.id.imbCI);//obtém o ImageButton
         imgCI.setOnClickListener(new View.OnClickListener() {//define o ouvidor de cliques no botão
@@ -45,8 +57,9 @@ public class NewItemActivity extends AppCompatActivity {
         btnAddItem.setOnClickListener(new View.OnClickListener() {//seta o ouvidor de cliques do Button
             @Override
             public void onClick(View v) {//verifica se os campos foram preenchidos pelo usuário
+                Uri photoselected = vm.getSelectPhotoLocation();//pega as imagens de vm e salva
 
-                if (photoSelected == null) { //se nenhuma foto foi escolhida
+                if (photoselected == null) { //se nenhuma foto foi escolhida
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!",
                             Toast.LENGTH_LONG) .show();
                     return;//exibe mensagem de erro
@@ -67,7 +80,7 @@ public class NewItemActivity extends AppCompatActivity {
                 }
 
                 Intent i = new Intent();//cria Intent
-                i.setData(photoSelected);//seta o Uri da imagem escolhida dentro do Intent
+                i.setData(photoselected);//seta o Uri da imagem escolhida dentro do Intent
                 i.putExtra("title", title);//seta título
                 i.putExtra("description", description);//seta descrição
                 setResult(Activity.RESULT_OK, i);//indica o resultado da Activity
@@ -82,9 +95,12 @@ public class NewItemActivity extends AppCompatActivity {
         if (requestCode == PHOTO_PICKER_REQUEST) {//verifica se requestCode é referente ao fornecido na chamada de
             //startActiviyForResult com id PHOTO_PICKER_REQUEST
             if(resultCode == Activity.RESULT_OK) {//verifica se resultCode é um código de sucesso
-                photoSelected = data.getData();//obtém o resultado,caso as duas condições acima sejam verdadeiras
+                Uri photoSelected = data.getData();//obtém o resultado,caso as duas condições acima sejam verdadeiras
                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);//obtém o ImageView
                 imvfotoPreview.setImageURI(photoSelected);//exibe a imagem que está associada ao endereço setando o URI.
+
+                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);//obtém o ViewModel
+                vm.setSelectPhotoLocation(photoSelected);//guarda dentro do ViewModel o endereço URI da imagem escolhida pelo usuário
             }
         }
     }

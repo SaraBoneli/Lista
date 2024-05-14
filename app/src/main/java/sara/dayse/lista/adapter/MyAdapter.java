@@ -40,7 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter {
         MyItem myItem = items.get(position);//obtém item que será usado para preencher a UI.
         View v = holder.itemView;//obtém o objeto do tipo View que está guardado dentro do ViewHolder.
         ImageView imvfoto = v.findViewById(R.id.imvPhoto);//chama o método findViewById.
-        imvfoto.setImageURI(myItem.photo);//preenche UI com os dados do item.
+        imvfoto.setImageBitmap(myItem.photo);//preenche UI com os dados do item.
 
         TextView tvTitle = v.findViewById(R.id.tvTitle);//chama o método findViewById.
         tvTitle.setText(myItem.title);//preenche UI com os dados do item.
